@@ -1,14 +1,14 @@
 
 const express = require('express');
 const hbs     = require('hbs');
-const app     = express();
-const path    = require('path');
+const path    = require('path'); // libreria interna express
 const PunkAPIWrapper = require('punkapi-javascript-wrapper');
 const punkAPI = new PunkAPIWrapper();
+const app     = express();
 
 app.set('view engine', 'hbs');
-app.set('views', __dirname + '/views');
-hbs.registerPartials(__dirname + '/views/partials');
+app.set('views', path.join(__dirname, 'views'));
+hbs.registerPartials(path.join(__dirname,'views', 'partials'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -19,7 +19,7 @@ app.get('/', (req, res, next) => {
 app.get('/beers', (req, res, next) => {
   punkAPI.getBeers()
   .then(beers => {
-    res.render('beers', { beers: beers });
+    res.render('beers', { beers });
   })
   .catch(error => {
     console.log(error)
@@ -30,7 +30,8 @@ app.get('/beers', (req, res, next) => {
 app.get('/random-beer', (req, res, next) => {
   punkAPI.getRandom()
   .then(beers => {
-    res.render('random-beer', {beers:beers});
+    const [beer] = beers; // el primer elemento del array beers[0]
+    res.render('random-beer', beer);
   })
   .catch(error => {
     console.log(error)
